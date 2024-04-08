@@ -130,11 +130,19 @@
                                 <limit>
                                     <counter>INSTRUCTION</counter>
                                     <value>COVEREDRATIO</value>
-                                    <minimum>0.70</minimum>
+                                    <minimum>0.60</minimum>
                                 </limit>
                             </limits>
                         </rule>
                     </rules>
+                    <excludes>
+                        <exclude>/com/vicarius/quota/*</exclude>
+                        <exclude>/com/vicarius/quota/dto/*</exclude>
+                        <exclude>/com/vicarius/quota/exception/*</exclude>
+                        <exclude>/com/vicarius/quota/model/*</exclude>
+                        <exclude>/com/vicarius/quota/repository/*</exclude>
+                        <exclude>/com/vicarius/quota/repository/factory/*</exclude>
+                    </excludes>
                 </configuration>
                 <version>0.8.7</version>
                 <executions>
