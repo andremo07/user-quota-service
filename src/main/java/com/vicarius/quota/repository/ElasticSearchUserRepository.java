@@ -9,26 +9,14 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Repository("elasticSearchUserRepository")
-public class ElasticSearchUserRepository implements UserRepository {
+public class ElasticSearchUserRepository implements GenericRepository<User, Long> {
 
     private final Map<Long, User> users = new ConcurrentHashMap<>();
-
-    public ElasticSearchUserRepository() {
-        //Loading users
-/*        var user1 = new User(1L, "Andre", "Oliveira", null);
-        var user2 = new User(2L, "Jane", "Smith", null);
-        var user3 = new User(3L, "John", "Kayne", null);
-
-        users.put(user1.getUserId(), user1);
-        users.put(user2.getUserId(), user2);
-        users.put(user3.getUserId(), user3);*/
-    }
 
     @Override
     public User save(User user) {
         if (user.getId() == null) {
-            long id = generateId();
-            user.setId(id);
+            user.setId(generateId());
         }
 
         users.put(user.getId(), user);
@@ -43,6 +31,11 @@ public class ElasticSearchUserRepository implements UserRepository {
     @Override
     public void deleteById(Long id) {
         users.remove(id);
+    }
+
+    @Override
+    public Class<User> getEntityClass() {
+        return User.class;
     }
 
     public long generateId() {

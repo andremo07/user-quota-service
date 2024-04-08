@@ -5,5 +5,9 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository("mySqlUserRepository")
-public interface UserMySqlRepository extends CrudRepository<User, Long>, UserRepository {
+public interface UserMySqlRepository extends CrudRepository<User, Long>, GenericRepository<User, Long> {
+
+    default Class<User> getEntityClass() {
+        return User.class;
+    }
 }

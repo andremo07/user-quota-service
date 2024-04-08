@@ -33,8 +33,7 @@ public class UserQuotaService {
                 .orElseThrow(() -> new ResourceNotFoundException("User with ID " + userId + " not found"));
 
         if (!user.isLocked()) {
-            UserQuota userQuota = updateUserQuota(user);
-
+            updateUserQuota(user);
             userService.updateUser(userId, user);
         } else {
             throw new UserBlockedException("User with ID " + userId + " is blocked");
@@ -45,7 +44,7 @@ public class UserQuotaService {
         return new ArrayList<>(userQuotaMap.values());
     }
 
-    private UserQuota updateUserQuota(User user) {
+    private void updateUserQuota(User user) {
         Long userId = user.getId();
 
         UserQuota userQuota = userQuotaMap.getOrDefault(userId,
@@ -59,6 +58,5 @@ public class UserQuotaService {
 
         userQuota.setUser(user);
         userQuotaMap.put(userId, userQuota);
-        return userQuota;
     }
 }
