@@ -1,6 +1,7 @@
-package com.vicarius.quota.repository;
+package com.vicarius.quota.repository.elasticsearch;
 
 import com.vicarius.quota.model.User;
+import com.vicarius.quota.repository.GenericRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Map;
