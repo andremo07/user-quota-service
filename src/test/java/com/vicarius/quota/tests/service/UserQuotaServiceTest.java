@@ -1,7 +1,6 @@
 package com.vicarius.quota.tests.service;
 
 import com.vicarius.quota.exception.ResourceNotFoundException;
-import com.vicarius.quota.exception.UserBlockedException;
 import com.vicarius.quota.model.User;
 import com.vicarius.quota.model.UserQuota;
 import com.vicarius.quota.service.UserQuotaService;
@@ -70,17 +69,6 @@ class UserQuotaServiceTest {
         verify(userService, times(1)).updateUser(userId, user);
         assertTrue(user.isLocked());
         assertEquals(userQuota.getRequestNumber(), 5);
-    }
-
-    @Test
-    void givenLockedUser_whenConsumeQuota_thenThrowException() throws Exception {
-        Long userId = 1L;
-        User user = createUser();
-        user.setLocked(true);
-
-        when(userService.getUser(userId)).thenReturn(Optional.of(user));
-
-        assertThrows(UserBlockedException.class, () -> userQuotaService.consumeQuota(userId));
     }
 
     @Test

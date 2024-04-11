@@ -3,7 +3,6 @@ package com.vicarius.quota.tests.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vicarius.quota.dto.UserDto;
 import com.vicarius.quota.exception.ResourceNotFoundException;
-import com.vicarius.quota.exception.UserBlockedException;
 import com.vicarius.quota.model.User;
 import com.vicarius.quota.model.UserQuota;
 import com.vicarius.quota.service.UserQuotaService;
@@ -196,15 +195,6 @@ class UserQuotaControllerTest {
         mockMvc.perform(get(String.format("%s/%s/%s", API_RESOURCE, 1L, "quota"))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
-    }
-
-    @Test
-    void whenConsumeQuotaThrowUserBlockedException_thenReturnForbiddenStatus() throws Exception {
-        doThrow(UserBlockedException.class).when(userQuotaService).consumeQuota(anyLong());
-
-        mockMvc.perform(get(String.format("%s/%s/%s", API_RESOURCE, 1L, "quota"))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isForbidden());
     }
 
     @Test

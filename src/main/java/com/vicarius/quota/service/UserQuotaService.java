@@ -1,7 +1,6 @@
 package com.vicarius.quota.service;
 
 import com.vicarius.quota.exception.ResourceNotFoundException;
-import com.vicarius.quota.exception.UserBlockedException;
 import com.vicarius.quota.model.User;
 import com.vicarius.quota.model.UserQuota;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +10,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
@@ -28,16 +28,12 @@ public class UserQuotaService {
         this.maxRequests = maxRequests;
     }
 
-    public void consumeQuota(Long userId) throws ResourceNotFoundException, UserBlockedException {
+    public void consumeQuota(Long userId) throws ResourceNotFoundException {
         User user = userService.getUser(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User with ID " + userId + " not found"));
 
-        if (!user.isLocked()) {
-            updateUserQuota(user);
-            userService.updateUser(userId, user);
-        } else {
-            throw new UserBlockedException("User with ID " + userId + " is blocked");
-        }
+        updateUserQuota(user);
+        userService.updateUser(userId, user);
     }
 
     public List<UserQuota> getUsersQuota() {
@@ -58,5 +54,9 @@ public class UserQuotaService {
 
         userQuota.setUser(user);
         userQuotaMap.put(userId, userQuota);
+    }
+
+    public Optional<UserQuota> getUserQuota(Long userId) {
+        return Optional.ofNullable(userQuotaMap.get(userId));
     }
 }
