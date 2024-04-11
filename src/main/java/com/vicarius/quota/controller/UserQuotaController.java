@@ -2,7 +2,7 @@ package com.vicarius.quota.controller;
 
 import com.vicarius.quota.dto.UserDto;
 import com.vicarius.quota.exception.ResourceNotFoundException;
-import com.vicarius.quota.exception.UserBlockedException;
+import com.vicarius.quota.interceptor.CheckUserQuota;
 import com.vicarius.quota.model.User;
 import com.vicarius.quota.service.UserQuotaService;
 import com.vicarius.quota.service.UserService;
@@ -74,12 +74,11 @@ public class UserQuotaController {
 
     @ResponseBody
     @GetMapping(value = "/{userId}/quota")
+    @CheckUserQuota
     public ResponseEntity<?> consumeQuota(@PathVariable("userId") Long userId) {
         try {
             userQuotaService.consumeQuota(userId);
             return ResponseEntity.ok().build();
-        } catch (UserBlockedException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
