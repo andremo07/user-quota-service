@@ -50,7 +50,7 @@ class UserQuotaControllerTest {
     void whenGetUserRequestIsFound_thenReturnOkStatus() throws Exception {
         var expectedUser = createUser();
 
-        when(userService.getUser(anyLong())).thenReturn(Optional.of(expectedUser));
+        when(userService.getUser(anyLong())).thenReturn(expectedUser);
 
         var response = mockMvc.perform(get(String.format("%s/%s", API_RESOURCE, expectedUser.getId()))
                         .contentType(MediaType.APPLICATION_JSON))
@@ -67,7 +67,7 @@ class UserQuotaControllerTest {
 
     @Test
     void whenGetUserRequestIsNotFound_thenReturnNotFoundStatus() throws Exception {
-        when(userService.getUser(anyLong())).thenReturn(Optional.empty());
+        when(userService.getUser(anyLong())).thenReturn(null);
 
         mockMvc.perform(get(String.format("%s/%s", API_RESOURCE, 1L))
                         .contentType(MediaType.APPLICATION_JSON))

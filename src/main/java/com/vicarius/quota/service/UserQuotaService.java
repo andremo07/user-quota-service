@@ -29,9 +29,7 @@ public class UserQuotaService {
     }
 
     public void consumeQuota(Long userId) throws ResourceNotFoundException {
-        User user = userService.getUser(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User with ID " + userId + " not found"));
-
+        User user = userService.getUser(userId);
         updateUserQuota(user);
         userService.updateUser(userId, user);
     }

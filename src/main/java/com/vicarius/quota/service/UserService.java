@@ -28,10 +28,10 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public Optional<User> getUser(Long userId) {
+    public User getUser(Long userId) throws ResourceNotFoundException {
         GenericRepository<User, Long> userRepository = repositoryFactory.getRepository(User.class);
-
-        return userRepository.findById(userId);
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User with ID " + userId + " not found"));
     }
 
     public void updateUser(Long userId, User updatedUser) throws ResourceNotFoundException {

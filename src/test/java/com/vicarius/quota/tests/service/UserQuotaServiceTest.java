@@ -38,7 +38,7 @@ class UserQuotaServiceTest {
 
         UserQuota userQuota = new UserQuota(user, 0);
 
-        when(userService.getUser(userId)).thenReturn(Optional.of(user));
+        when(userService.getUser(userId)).thenReturn(user);
         when(userQuotaMap.getOrDefault(any(), any())).thenReturn(userQuota);
 
         userQuotaService.consumeQuota(userId);
@@ -58,7 +58,7 @@ class UserQuotaServiceTest {
 
         UserQuota userQuota = new UserQuota(user, 4);
 
-        when(userService.getUser(userId)).thenReturn(Optional.of(user));
+        when(userService.getUser(userId)).thenReturn(user);
         when(userQuotaMap.getOrDefault(any(), any())).thenReturn(userQuota);
 
         userQuotaService.consumeQuota(userId);
@@ -75,7 +75,7 @@ class UserQuotaServiceTest {
     void givenNotFoundUser_whenConsumeQuota_thenThrowException() throws Exception {
         Long userId = 1L;
 
-        when(userService.getUser(userId)).thenReturn(Optional.empty());
+        when(userService.getUser(userId)).thenReturn(null);
 
         assertThrows(ResourceNotFoundException.class, () -> userQuotaService.consumeQuota(userId));
     }

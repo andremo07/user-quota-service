@@ -4,11 +4,14 @@ import com.vicarius.quota.dto.UserDto;
 import com.vicarius.quota.exception.ResourceNotFoundException;
 import com.vicarius.quota.interceptor.CheckUserQuota;
 import com.vicarius.quota.model.User;
+import com.vicarius.quota.model.UserQuota;
 import com.vicarius.quota.service.UserQuotaService;
 import com.vicarius.quota.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -22,78 +25,39 @@ public class UserQuotaController {
         this.userQuotaService = userQuotaService;
     }
 
-    @ResponseBody
     @GetMapping(value = "/{userId}")
-    public ResponseEntity<?> get(@PathVariable("userId") Long userId) {
-        try {
-            return userService.getUser(userId)
-                    .map(ResponseEntity::ok)
-                    .orElse(ResponseEntity.notFound().build());
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
+    public ResponseEntity<User> get(@PathVariable("userId") Long userId) throws ResourceNotFoundException {
+        return ResponseEntity.ok(userService.getUser(userId));
     }
 
-    @ResponseBody
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody UserDto createUserRequest) {
-        try {
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(userService.createUser(createUserRequest));
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
+    public ResponseEntity<User> create(@RequestBody UserDto createUserRequest) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(userService.createUser(createUserRequest));
     }
 
-    @ResponseBody
     @PutMapping(value = "/{userId}")
-    public ResponseEntity<?> update(@PathVariable("userId") Long userId,
-                                    @RequestBody User updatedUser) {
-        try {
-            userService.updateUser(userId, updatedUser);
-            return ResponseEntity.ok().build();
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
+    public ResponseEntity<Void> update(@PathVariable("userId") Long userId, @RequestBody User updatedUser)
+            throws ResourceNotFoundException {
+        userService.updateUser(userId, updatedUser);
+        return ResponseEntity.ok().build();
     }
 
-    @ResponseBody
     @DeleteMapping(value = "/{userId}")
-    public ResponseEntity<?> delete(@PathVariable("userId") Long userId) {
-        try {
-            userService.deleteUser(userId);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
+    public ResponseEntity<Void> delete(@PathVariable("userId") Long userId) throws ResourceNotFoundException {
+        userService.deleteUser(userId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @ResponseBody
     @GetMapping(value = "/{userId}/quota")
     @CheckUserQuota
-    public ResponseEntity<?> consumeQuota(@PathVariable("userId") Long userId) {
-        try {
-            userQuotaService.consumeQuota(userId);
-            return ResponseEntity.ok().build();
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
+    public ResponseEntity<Void> consumeQuota(@PathVariable("userId") Long userId) throws ResourceNotFoundException {
+        userQuotaService.consumeQuota(userId);
+        return ResponseEntity.ok().build();
     }
 
-    @ResponseBody
     @GetMapping(value = "/quota")
-    public ResponseEntity<?> getUsersQuota() {
-        try {
-            return ResponseEntity.ok(userQuotaService.getUsersQuota());
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
+    public ResponseEntity<List<UserQuota>> getUsersQuota() {
+        return ResponseEntity.ok(userQuotaService.getUsersQuota());
     }
-
 }

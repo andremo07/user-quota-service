@@ -14,7 +14,7 @@ import java.lang.reflect.Method;
 @Component
 public class ConsumeQuotaInterceptor implements HandlerInterceptor {
 
-    private final static String ROOT_PATH_NAME = "users";
+    private static final String ROOT_PATH_NAME = "users";
     private final UserQuotaService userQuotaService;
 
     public ConsumeQuotaInterceptor(UserQuotaService userQuotaService) {
