@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -81,6 +82,27 @@ class UserQuotaServiceTest {
         assertThrows(ResourceNotFoundException.class, () -> userQuotaService.incrementUserRequests(userId));
     }
 
+    @Test
+    void givenUserIdWhenUserDoesNotHasMoreThanSupportedRequestsThenFalse() throws Exception {
+        when(userQuotaMap.getOrDefault(anyLong(), any())).thenReturn(createUserQuota(1));
+
+        assertFalse(userQuotaService.isUserBlocked(anyLong()));
+    }
+
+    @Test
+    void givenUserIdWhenUserHasMoreThanSupportedRequestsThenTrue() throws Exception {
+        when(userQuotaMap.getOrDefault(anyLong(), any())).thenReturn(createUserQuota(6));
+
+        assertTrue(userQuotaService.isUserBlocked(anyLong()));
+    }
+
+    @Test
+    void whenGetQuotasReturnAllQuotas() {
+        when(userQuotaMap.values()).thenReturn(List.of(createUserQuota(1)));
+
+        assertNotNull(userQuotaService.getUsersQuota());
+    }
+
     User createUser() {
         var user = new User();
         user.setId(1L);
@@ -90,4 +112,7 @@ class UserQuotaServiceTest {
         return user;
     }
 
+    UserQuota createUserQuota(Integer numberOfRequests) {
+        return new UserQuota(createUser(), numberOfRequests);
+    }
 }

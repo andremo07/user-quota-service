@@ -116,7 +116,7 @@ class UserQuotaControllerTest {
     }
 
     @Test
-    void whenUpdateUserRequestIsFound_thenReturnOkStatus() throws Exception {
+    void whenUpdateUserRequestIsFound_thenReturnNoContentStatus() throws Exception {
         var user = createUser();
 
         doNothing().when(userService).updateUser(anyLong(), any());
@@ -124,7 +124,7 @@ class UserQuotaControllerTest {
         mockMvc.perform(patch(String.format("%s/%s", API_RESOURCE, user.getId()))
                         .content(mapper.writeValueAsString(user))
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
     }
 
     @Test

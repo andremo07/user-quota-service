@@ -2,7 +2,6 @@ package com.vicarius.quota.controller;
 
 import com.vicarius.quota.dto.UserDto;
 import com.vicarius.quota.exception.ResourceNotFoundException;
-import com.vicarius.quota.interceptor.CheckUserQuota;
 import com.vicarius.quota.model.User;
 import com.vicarius.quota.model.UserQuota;
 import com.vicarius.quota.service.UserQuotaService;
@@ -40,7 +39,7 @@ public class UserQuotaController {
     public ResponseEntity<Void> update(@PathVariable("userId") Long userId, @RequestBody UserDto user)
             throws ResourceNotFoundException {
         userService.updateUser(userId, user);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @DeleteMapping(value = "/{userId}")
@@ -50,7 +49,6 @@ public class UserQuotaController {
     }
 
     @GetMapping(value = "/{userId}/quota")
-    @CheckUserQuota
     public ResponseEntity<Void> consumeQuota(@PathVariable("userId") Long userId) throws ResourceNotFoundException {
         userQuotaService.incrementUserRequests(userId);
         return ResponseEntity.ok().build();

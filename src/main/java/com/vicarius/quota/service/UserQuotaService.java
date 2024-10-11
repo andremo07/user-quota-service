@@ -6,6 +6,7 @@ import com.vicarius.quota.model.UserQuota;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -34,8 +35,10 @@ public class UserQuotaService {
 
         if (userQuota.getRequestNumber() >= maxRequests) {
             user.setLocked(true);
-            userService.updateUser(user);
         }
+
+        user.setLastLoginTimeUtc(LocalDateTime.now());
+        userService.updateUser(user);
     }
 
     public boolean isUserBlocked(Long userId) throws ResourceNotFoundException {
@@ -46,9 +49,5 @@ public class UserQuotaService {
 
     public List<UserQuota> getUsersQuota() {
         return new ArrayList<>(userQuotaMap.values());
-    }
-
-    public Optional<UserQuota> getUserQuota(Long userId) {
-        return Optional.ofNullable(userQuotaMap.get(userId));
     }
 }

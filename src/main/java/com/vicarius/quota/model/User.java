@@ -1,11 +1,16 @@
 package com.vicarius.quota.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
 @Entity
 public class User {
     @Id
@@ -28,44 +33,5 @@ public class User {
     public User(Long userId, String firstName, String lastName, LocalDateTime lastLoginTimeUtc) {
         this(firstName, lastName, lastLoginTimeUtc);
         this.id = userId;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public LocalDateTime getLastLoginTimeUtc() {
-        return lastLoginTimeUtc;
-    }
-
-    public void setLastLoginTimeUtc(LocalDateTime lastLoginTimeUtc) {
-        this.lastLoginTimeUtc = lastLoginTimeUtc;
-    }
-
-    public boolean isLocked() {
-        return locked;
-    }
-    public void setLocked(boolean locked) {
-        this.locked = locked;
     }
 }

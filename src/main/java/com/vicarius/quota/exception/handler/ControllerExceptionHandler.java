@@ -1,4 +1,4 @@
-package com.vicarius.quota.controller.exception.handler;
+package com.vicarius.quota.exception.handler;
 
 import com.vicarius.quota.dto.Error;
 import com.vicarius.quota.exception.ResourceNotFoundException;
