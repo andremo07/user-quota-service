@@ -6,52 +6,46 @@ import com.vicarius.quota.model.UserQuota;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 @Service
 public class UserQuotaService {
 
     private final UserService userService;
-    private final ConcurrentHashMap<Long, UserQuota> userQuotaMap; // In-memory storage (simulates cache)
+    private final ConcurrentMap<Long, UserQuota> userQuotaMap; // In-memory storage (simulates cache)
     private final int maxRequests;
 
     public UserQuotaService(UserService userService,
-                            ConcurrentHashMap<Long, UserQuota> userQuotaMap,
+                            ConcurrentMap<Long, UserQuota> userQuotaMap,
                             @Value("${user.max.request}") Integer maxRequests) {
         this.userService = userService;
         this.userQuotaMap = userQuotaMap;
         this.maxRequests = maxRequests;
     }
 
-    public void consumeQuota(Long userId) throws ResourceNotFoundException {
+    public void incrementUserRequests(Long userId) throws ResourceNotFoundException {
         User user = userService.getUser(userId);
-        updateUserQuota(user);
-        userService.updateUser(userId, user);
+        UserQuota userQuota = userQuotaMap.getOrDefault(userId, new UserQuota(user, 0));
+        userQuota.incrementRequestNumber();
+        userQuotaMap.put(userId, userQuota);
+
+        if (userQuota.getRequestNumber() >= maxRequests) {
+            user.setLocked(true);
+            userService.updateUser(user);
+        }
+    }
+
+    public boolean isUserBlocked(Long userId) throws ResourceNotFoundException {
+        UserQuota userQuota = userQuotaMap.
+                getOrDefault(userId, new UserQuota(userService.getUser(userId), 0));
+        return userQuota.getRequestNumber() >= maxRequests;
     }
 
     public List<UserQuota> getUsersQuota() {
         return new ArrayList<>(userQuotaMap.values());
-    }
-
-    private void updateUserQuota(User user) {
-        Long userId = user.getId();
-
-        UserQuota userQuota = userQuotaMap.getOrDefault(userId,
-                new UserQuota(user, 0));
-        userQuota.incrementRequestNumber();
-
-        user.setLastLoginTimeUtc(LocalDateTime.now(ZoneId.of("UTC")));
-        if (userQuota.getRequestNumber() >= maxRequests) {
-            user.setLocked(true);
-        }
-
-        userQuota.setUser(user);
-        userQuotaMap.put(userId, userQuota);
     }
 
     public Optional<UserQuota> getUserQuota(Long userId) {

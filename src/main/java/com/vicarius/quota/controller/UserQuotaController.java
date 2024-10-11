@@ -36,10 +36,10 @@ public class UserQuotaController {
                 .body(userService.createUser(createUserRequest));
     }
 
-    @PutMapping(value = "/{userId}")
-    public ResponseEntity<Void> update(@PathVariable("userId") Long userId, @RequestBody User updatedUser)
+    @PatchMapping(value = "/{userId}")
+    public ResponseEntity<Void> update(@PathVariable("userId") Long userId, @RequestBody UserDto user)
             throws ResourceNotFoundException {
-        userService.updateUser(userId, updatedUser);
+        userService.updateUser(userId, user);
         return ResponseEntity.ok().build();
     }
 
@@ -52,7 +52,7 @@ public class UserQuotaController {
     @GetMapping(value = "/{userId}/quota")
     @CheckUserQuota
     public ResponseEntity<Void> consumeQuota(@PathVariable("userId") Long userId) throws ResourceNotFoundException {
-        userQuotaService.consumeQuota(userId);
+        userQuotaService.incrementUserRequests(userId);
         return ResponseEntity.ok().build();
     }
 

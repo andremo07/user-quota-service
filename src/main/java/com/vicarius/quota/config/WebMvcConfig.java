@@ -9,14 +9,15 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
-    private final UserQuotaService userQuotaService;
+    private final ConsumeQuotaInterceptor consumeQuotaInterceptor;
 
-    public WebMvcConfig(UserQuotaService userQuotaService) {
-        this.userQuotaService = userQuotaService;
+    public WebMvcConfig(ConsumeQuotaInterceptor consumeQuotaInterceptor) {
+        this.consumeQuotaInterceptor = consumeQuotaInterceptor;
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new ConsumeQuotaInterceptor(userQuotaService));
+        registry.addInterceptor(consumeQuotaInterceptor)
+                .addPathPatterns("/users/*/quota");
     }
 }
