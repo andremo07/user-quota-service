@@ -1,16 +1,18 @@
 package com.vicarius.quota.repository.elasticsearch;
 
 import com.vicarius.quota.model.User;
-import com.vicarius.quota.repository.GenericRepository;
+import com.vicarius.quota.repository.UserRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Repository("elasticSearchUserRepository")
-public class ElasticSearchUserRepository implements GenericRepository<User, Long> {
+public class ElasticSearchUserRepository implements UserRepository<User, Long> {
 
     private final Map<Long, User> users = new ConcurrentHashMap<>();
 
@@ -37,6 +39,14 @@ public class ElasticSearchUserRepository implements GenericRepository<User, Long
     @Override
     public Class<User> getEntityClass() {
         return User.class;
+    }
+
+    @Override
+    public List<User> findByLastName(String lastName) {
+        return users.values()
+                .stream()
+                .filter(user -> lastName.equals(user.getLastName()))
+                .collect(Collectors.toList());
     }
 
     public long generateId() {
