@@ -41,12 +41,12 @@ class UserQuotaServiceTest {
         UserQuota userQuota = new UserQuota(user, 0);
 
         when(userService.getUser(userId)).thenReturn(user);
-        when(userQuotaMap.getOrDefault(any(), any())).thenReturn(userQuota);
+        when(userQuotaMap.getOrDefault(anyLong(), any())).thenReturn(userQuota);
 
         userQuotaService.incrementUserRequests(userId);
 
         verify(userService, times(1)).getUser(userId);
-        verify(userQuotaMap, times(1)).getOrDefault(any(), any());
+        verify(userQuotaMap, times(1)).getOrDefault(anyLong(), any());
         verify(userQuotaMap, times(1)).put(any(), any());
         verify(userService, times(1)).updateUser(user);
         assertFalse(user.isLocked());
@@ -61,12 +61,12 @@ class UserQuotaServiceTest {
         UserQuota userQuota = new UserQuota(user, 4);
 
         when(userService.getUser(userId)).thenReturn(user);
-        when(userQuotaMap.getOrDefault(any(), any())).thenReturn(userQuota);
+        when(userQuotaMap.getOrDefault(anyLong(), any())).thenReturn(userQuota);
 
         userQuotaService.incrementUserRequests(userId);
 
         verify(userService, times(1)).getUser(userId);
-        verify(userQuotaMap, times(1)).getOrDefault(any(), any());
+        verify(userQuotaMap, times(1)).getOrDefault(anyLong(), any());
         verify(userQuotaMap, times(1)).put(any(), any());
         verify(userService, times(1)).updateUser(user);
         assertTrue(user.isLocked());
