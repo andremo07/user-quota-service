@@ -4,7 +4,7 @@ import com.vicarius.quota.dto.UserDto;
 import com.vicarius.quota.exception.ResourceNotFoundException;
 import com.vicarius.quota.model.User;
 import com.vicarius.quota.repository.factory.RepositoryFactory;
-import com.vicarius.quota.repository.mysql.MySqlUserRepository;
+import com.vicarius.quota.repository.mysql.DatabaseUserRepository;
 import com.vicarius.quota.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +28,7 @@ class UserServiceTest {
     private RepositoryFactory<User, Long> repositoryFactory;
 
     @Mock
-    private MySqlUserRepository mySqlUserRepository;
+    private DatabaseUserRepository mySqlUserRepository;
 
     @Test
     void givenAnUserWhenCreateUserThenSaveUser() {
