@@ -13,8 +13,8 @@ import java.util.Map;
 @Component
 public class RepositoryFactory<T, ID> {
 
-    private final static int STARTING_DAY_HOUR = 9;
-    private final static int FINISHING_DAY_HOUR = 17;
+    private static final int STARTING_DAY_HOUR = 9;
+    private static final int FINISHING_DAY_HOUR = 17;
     private final Map<Class<?>, GenericRepository<T, ID>> databaseRepositories;
     private final Map<Class<?>, GenericRepository<T, ID>> elasticSearchRepositories;
 

@@ -17,7 +17,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -67,7 +66,7 @@ class UserQuotaControllerTest {
 
     @Test
     void whenGetUserRequestIsNotFound_thenReturnNotFoundStatus() throws Exception {
-        when(userService.getUser(anyLong())).thenReturn(null);
+        when(userService.getUser(anyLong())).thenThrow(ResourceNotFoundException.class);
 
         mockMvc.perform(get(String.format("%s/%s", API_RESOURCE, 1L))
                         .contentType(MediaType.APPLICATION_JSON))
@@ -117,15 +116,15 @@ class UserQuotaControllerTest {
     }
 
     @Test
-    void whenUpdateUserRequestIsFound_thenReturnOkStatus() throws Exception {
+    void whenUpdateUserRequestIsFound_thenReturnNoContentStatus() throws Exception {
         var user = createUser();
 
         doNothing().when(userService).updateUser(anyLong(), any());
 
-        mockMvc.perform(put(String.format("%s/%s", API_RESOURCE, user.getId()))
+        mockMvc.perform(patch(String.format("%s/%s", API_RESOURCE, user.getId()))
                         .content(mapper.writeValueAsString(user))
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
     }
 
     @Test
@@ -134,7 +133,7 @@ class UserQuotaControllerTest {
 
         doThrow(ResourceNotFoundException.class).when(userService).updateUser(anyLong(), any());
 
-        mockMvc.perform(put(String.format("%s/%s", API_RESOURCE, user.getId()))
+        mockMvc.perform(patch(String.format("%s/%s", API_RESOURCE, user.getId()))
                         .content(mapper.writeValueAsString(user))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
@@ -146,7 +145,7 @@ class UserQuotaControllerTest {
 
         doThrow(RuntimeException.class).when(userService).updateUser(anyLong(), any());
 
-        mockMvc.perform(put(String.format("%s/%s", API_RESOURCE, user.getId()))
+        mockMvc.perform(patch(String.format("%s/%s", API_RESOURCE, user.getId()))
                         .content(mapper.writeValueAsString(user))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError());
@@ -181,7 +180,7 @@ class UserQuotaControllerTest {
 
     @Test
     void whenConsumeQuotaIsSuccess_thenReturnNoContentStatus() throws Exception {
-        doNothing().when(userQuotaService).consumeQuota(anyLong());
+        doNothing().when(userQuotaService).incrementUserRequests(anyLong());
 
         mockMvc.perform(get(String.format("%s/%s/%s", API_RESOURCE, 1L, "quota"))
                         .contentType(MediaType.APPLICATION_JSON))
@@ -190,7 +189,7 @@ class UserQuotaControllerTest {
 
     @Test
     void whenConsumeQuotaWithUserNotFound_thenReturnNotFoundStatus() throws Exception {
-        doThrow(ResourceNotFoundException.class).when(userQuotaService).consumeQuota(anyLong());
+        doThrow(ResourceNotFoundException.class).when(userQuotaService).incrementUserRequests(anyLong());
 
         mockMvc.perform(get(String.format("%s/%s/%s", API_RESOURCE, 1L, "quota"))
                         .contentType(MediaType.APPLICATION_JSON))
@@ -199,7 +198,7 @@ class UserQuotaControllerTest {
 
     @Test
     void whenConsumeQuotaThrowException_thenReturnInternalServerErrorStatus() throws Exception {
-        doThrow(RuntimeException.class).when(userQuotaService).consumeQuota(anyLong());
+        doThrow(RuntimeException.class).when(userQuotaService).incrementUserRequests(anyLong());
 
         mockMvc.perform(get(String.format("%s/%s/%s", API_RESOURCE, 1L, "quota"))
                         .contentType(MediaType.APPLICATION_JSON))

@@ -34,27 +34,25 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User with ID " + userId + " not found"));
     }
 
-    public void updateUser(Long userId, User updatedUser) throws ResourceNotFoundException {
+    public void updateUser(Long userId, UserDto user) throws ResourceNotFoundException {
         GenericRepository<User, Long> userRepository = repositoryFactory.getRepository(User.class);
 
-        User existingUser = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User with ID " + userId + " not found"));
+        User existingUser = getUser(userId);
 
-        existingUser.setFirstName(updatedUser.getFirstName());
-        existingUser.setLastName(updatedUser.getLastName());
-        existingUser.setLocked(updatedUser.isLocked());
-        existingUser.setLastLoginTimeUtc(updatedUser.getLastLoginTimeUtc());
+        existingUser.setFirstName(user.getFirstName());
+        existingUser.setLastName(user.getLastName());
 
         userRepository.save(existingUser);
     }
 
-    public void deleteUser(Long userId) throws ResourceNotFoundException {
+    public void updateUser(User user) {
         GenericRepository<User, Long> userRepository = repositoryFactory.getRepository(User.class);
-
-        userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User with ID " + userId + " not found"));
-
-        userRepository.deleteById(userId);
+        userRepository.save(user);
     }
 
+    public void deleteUser(Long userId) throws ResourceNotFoundException {
+        GenericRepository<User, Long> userRepository = repositoryFactory.getRepository(User.class);
+        User existingUser = getUser(userId);
+        userRepository.deleteById(existingUser.getId());
+    }
 }

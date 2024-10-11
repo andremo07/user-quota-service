@@ -1,20 +1,15 @@
 package com.vicarius.quota.interceptor;
 
-import com.vicarius.quota.model.User;
-import com.vicarius.quota.model.UserQuota;
+import com.vicarius.quota.exception.UserBlockedException;
 import com.vicarius.quota.service.UserQuotaService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
-import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.lang.reflect.Method;
 
 @Component
 public class ConsumeQuotaInterceptor implements HandlerInterceptor {
 
-    private static final String ROOT_PATH_NAME = "users";
     private final UserQuotaService userQuotaService;
 
     public ConsumeQuotaInterceptor(UserQuotaService userQuotaService) {
@@ -22,45 +17,30 @@ public class ConsumeQuotaInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        if (handler instanceof HandlerMethod) {
-            Method method = ((HandlerMethod) handler).getMethod();
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+            throws Exception {
+        Long userId = extractUserIdFromRequest(request);
 
-            if (method.isAnnotationPresent(CheckUserQuota.class)) {
-                Long userId = getUserIdFromRequest(request);
-
-                if (userId != null && isUserBlocked(userId)) {
-                    response.sendError(HttpServletResponse.SC_FORBIDDEN,
-                            "User with ID " + userId + " not found");
-                    return false;
-                }
-            }
+        if (userQuotaService.isUserBlocked(userId)) {
+            throw new UserBlockedException("User has exceeded the maximum number of requests.");
         }
 
         return true;
     }
 
-    private Long getUserIdFromRequest(HttpServletRequest request) {
+    private Long extractUserIdFromRequest(HttpServletRequest request) {
         String path = request.getRequestURI();
         String[] pathSegments = path.split("/");
 
-        for (int i = 0; i < pathSegments.length; i++) {
-            if (pathSegments[i].equals(ROOT_PATH_NAME)) {
-                try {
-                    return Long.parseLong(pathSegments[i + 1]);
-                } catch (NumberFormatException e) {
-                    return null;
-                }
+        if (pathSegments.length >= 3) {
+            try {
+                return Long.parseLong(pathSegments[2]);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Invalid userId in path");
             }
         }
-        return null;
-    }
 
-    private boolean isUserBlocked(Long userId) {
-        return userQuotaService.getUserQuota(userId)
-                .map(UserQuota::getUser)
-                .map(User::isLocked)
-                .orElse(false);
+        throw new IllegalArgumentException("Invalid path format, expected /users/{userId}/quota");
     }
 }
 
