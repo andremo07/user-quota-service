@@ -5,17 +5,14 @@ import com.vicarius.quota.exception.ResourceNotFoundException;
 import com.vicarius.quota.model.User;
 import com.vicarius.quota.repository.UserRepository;
 import com.vicarius.quota.repository.factory.RepositoryFactory;
-import com.vicarius.quota.repository.mysql.DatabaseUserRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class UserService {
 
     private final RepositoryFactory<User, Long> repositoryFactory;
 
-    public UserService(RepositoryFactory<User, Long> genericRepository, DatabaseUserRepository databaseUserRepository) {
+    public UserService(RepositoryFactory<User, Long> genericRepository) {
         this.repositoryFactory = genericRepository;
     }
 
@@ -31,7 +28,6 @@ public class UserService {
 
     public User getUser(Long userId) throws ResourceNotFoundException {
         UserRepository<User, Long> userRepository = repositoryFactory.getRepository(User.class);
-        List<User> users = userRepository.findByLastName("Martin");
         return userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User with ID " + userId + " not found"));
     }
