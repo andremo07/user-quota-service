@@ -1,6 +1,7 @@
 package com.vicarius.quota.repository.elasticsearch;
 
 import com.vicarius.quota.model.User;
+import com.vicarius.quota.repository.ElasticSearchRepository;
 import com.vicarius.quota.repository.UserRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Repository("elasticSearchUserRepository")
-public class ElasticSearchUserRepository implements UserRepository<User, Long> {
+public class ElasticSearchUserRepository implements UserRepository<User, Long>, ElasticSearchRepository {
 
     private final Map<Long, User> users = new ConcurrentHashMap<>();
 

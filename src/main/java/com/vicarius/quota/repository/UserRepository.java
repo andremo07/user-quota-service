@@ -5,13 +5,13 @@ import com.vicarius.quota.model.User;
 import java.util.List;
 import java.util.Optional;
 
-public interface UserRepository<T, ID> {
+public interface UserRepository<T, K> {
 
     T save(T entity);
 
-    Optional<T> findById(ID id);
+    Optional<T> findById(K id);
 
-    void deleteById(ID id);
+    void deleteById(K id);
 
     Class<T> getEntityClass();
 

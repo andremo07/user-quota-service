@@ -37,7 +37,7 @@ public class RepositoryFactory<T, ID> {
     public UserRepository<T, ID> getRepository(Class<T> entityClass) {
         LocalDateTime now = LocalDateTime.now(ZoneId.of("UTC"));
 
-        if (true||isDayTime(now)) {
+        if (isDayTime(now)) {
             return databaseRepositories.get(entityClass);
         }
 
